@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background_bar/providers/hyprland.dart';
@@ -14,11 +15,15 @@ class WorkspacesIndicatorWindow {
     required this.icon,
     required this.rect,
     required this.active,
+    required this.floating,
+    required this.fullscreen,
   });
 
   final IconData icon;
   final Rect rect;
   final bool active;
+  final bool floating;
+  final bool fullscreen;
 }
 
 class WorkspacesIndicator extends HookConsumerWidget {
@@ -87,8 +92,21 @@ class WorkspacesIndicator extends HookConsumerWidget {
                   hyprWindow.rect.right.toDouble() / 1920.0,
                   hyprWindow.rect.bottom.toDouble() / (1080.0 - bottomReserved),
                 ),
+                floating: hyprWindow.floating,
+                fullscreen: hyprWindow.fullscreen,
               ),
             );
+            for (final key in tempWindows.keys) {
+              tempWindows[key]!.sort((a, b) {
+                if (a.fullscreen) {
+                  return 2;
+                } else if (a.floating) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              });
+            }
             windows.value = tempWindows;
           }
         }
@@ -116,8 +134,8 @@ class WorkspacesIndicator extends HookConsumerWidget {
           children: windows.value.keys.map((key) {
             final wins = windows.value[key]!;
             return AnimatedScale(
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.elasticOut,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut,
               scale: wins.any((win) => win.active) ? 1.1 : 1,
               child: Container(
                 decoration: BoxDecoration(
@@ -130,37 +148,55 @@ class WorkspacesIndicator extends HookConsumerWidget {
                   aspectRatio: 16 / 9,
                   child: LayoutBuilder(
                     builder: (context, contraints) {
-                      return Stack(
-                        children: wins.map((win) {
-                          return Positioned.fromRect(
-                            rect: Rect.fromLTRB(
-                              win.rect.left * contraints.maxWidth,
-                              win.rect.top * contraints.maxHeight,
-                              win.rect.right * contraints.maxWidth,
-                              win.rect.bottom * contraints.maxHeight,
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: win.active
-                                    ? const Color(0x44aaaaaa)
-                                    : Colors.black.withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(4),
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Stack(
+                          children: wins.map((win) {
+                            return Positioned.fromRect(
+                              rect: Rect.fromLTRB(
+                                win.rect.left * contraints.maxWidth,
+                                win.rect.top * contraints.maxHeight,
+                                win.rect.right * contraints.maxWidth,
+                                win.rect.bottom * contraints.maxHeight,
                               ),
-                              padding: const EdgeInsets.all(2),
-                              child: Center(
-                                child: FittedBox(
-                                  child: Icon(
-                                    size: 15,
-                                    win.icon,
-                                    color: win.active
-                                        ? Colors.white
-                                        : Colors.white,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: BackdropFilter(
+                                  filter: win.floating || win.fullscreen
+                                      ? ImageFilter.blur(
+                                          sigmaX: 2,
+                                          sigmaY: 2,
+                                        )
+                                      : ImageFilter.blur(),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: win.floating
+                                            ? const Color(0x44aaaaaa)
+                                            : Colors.transparent,
+                                        width: 1,
+                                      ),
+                                      color: win.active
+                                          ? const Color(0x44aaaaaa)
+                                          : Colors.black.withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    padding: const EdgeInsets.all(2),
+                                    child: Center(
+                                      child: FittedBox(
+                                        child: Icon(
+                                          size: 15,
+                                          win.icon,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
+                            );
+                          }).toList(),
+                        ),
                       );
                     },
                   ),
