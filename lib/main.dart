@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_background_bar/widgets/bar/bar.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -25,15 +27,22 @@ class MyApp extends HookConsumerWidget {
             ),
           ),
           child: Stack(
-            children: const [
+            children: [
               Positioned.fill(
                 child: Center(
-                  child: Image(
-                    image: AssetImage('assets/bubble.png'),
+                  child: ClipRRect(
+                    // TODO(flafydev): Figure out how to Clip as a circle
+                    borderRadius: BorderRadius.circular(1000),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      child: const Image(
+                        image: AssetImage('assets/bubble.png'),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              Align(
+              const Align(
                 alignment: Alignment.bottomCenter,
                 child: Bar(),
               ),

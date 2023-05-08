@@ -87,10 +87,13 @@ class WorkspacesIndicator extends HookConsumerWidget {
                 active: activeWindow?.address == hyprWindow.address,
                 icon: icon,
                 rect: Rect.fromLTRB(
-                  hyprWindow.rect.left.toDouble() / 1920.0,
-                  hyprWindow.rect.top.toDouble() / (1080.0 - bottomReserved),
-                  hyprWindow.rect.right.toDouble() / 1920.0,
-                  hyprWindow.rect.bottom.toDouble() / (1080.0 - bottomReserved),
+                  (hyprWindow.rect.left.toDouble() / 1920.0).clamp(0, 1),
+                  (hyprWindow.rect.top.toDouble() / (1080.0 - bottomReserved))
+                      .clamp(0, 1),
+                  (hyprWindow.rect.right.toDouble() / 1920.0).clamp(0, 1),
+                  (hyprWindow.rect.bottom.toDouble() /
+                          (1080.0 - bottomReserved))
+                      .clamp(0, 1),
                 ),
                 floating: hyprWindow.floating,
                 fullscreen: hyprWindow.fullscreen,
@@ -112,7 +115,7 @@ class WorkspacesIndicator extends HookConsumerWidget {
         }
 
         final subscription = hyprland.value?.eventsStream.listen(updateWindows);
-        updateWindows(null);
+        if (hyprland.value != null) updateWindows(null);
         return () => subscription?.cancel();
       },
       [hyprland],
@@ -131,25 +134,28 @@ class WorkspacesIndicator extends HookConsumerWidget {
               child: widget,
             ),
           ),
-          children: windows.value.keys.map((key) {
+          children: windows.value.keys.map<Widget>((key) {
             final wins = windows.value[key]!;
             return AnimatedScale(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut,
+              duration: const Duration(milliseconds: 100),
               scale: wins.any((win) => win.active) ? 1.1 : 1,
+              curve: Curves.easeOut,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
+                  // color: Colors.white.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                margin: const EdgeInsets.all(8),
-                padding: const EdgeInsets.all(3),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 8,
+                ),
+                // padding: const EdgeInsets.all(3),
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
                   child: LayoutBuilder(
                     builder: (context, contraints) {
                       return ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(8),
                         child: Stack(
                           children: wins.map((win) {
                             return Positioned.fromRect(
@@ -159,35 +165,38 @@ class WorkspacesIndicator extends HookConsumerWidget {
                                 win.rect.right * contraints.maxWidth,
                                 win.rect.bottom * contraints.maxHeight,
                               ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: BackdropFilter(
-                                  filter: win.floating || win.fullscreen
-                                      ? ImageFilter.blur(
-                                          sigmaX: 2,
-                                          sigmaY: 2,
-                                        )
-                                      : ImageFilter.blur(),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: win.floating
+                              child: Padding(
+                                padding: const EdgeInsets.all(1),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: BackdropFilter(
+                                    filter: win.floating || win.fullscreen
+                                        ? ImageFilter.blur(
+                                            sigmaX: 2,
+                                            sigmaY: 2,
+                                          )
+                                        : ImageFilter.blur(),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: win.floating
+                                              ? const Color(0x44aaaaaa)
+                                              : Colors.transparent,
+                                          width: 1,
+                                        ),
+                                        color: win.active
                                             ? const Color(0x44aaaaaa)
-                                            : Colors.transparent,
-                                        width: 1,
+                                            : const Color(0x44666666),
+                                        borderRadius: BorderRadius.circular(4),
                                       ),
-                                      color: win.active
-                                          ? const Color(0x44aaaaaa)
-                                          : Colors.black.withOpacity(0.3),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    padding: const EdgeInsets.all(2),
-                                    child: Center(
-                                      child: FittedBox(
-                                        child: Icon(
-                                          size: 15,
-                                          win.icon,
-                                          color: Colors.white,
+                                      padding: const EdgeInsets.all(2),
+                                      child: Center(
+                                        child: FittedBox(
+                                          child: Icon(
+                                            size: 15,
+                                            win.icon,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                     ),

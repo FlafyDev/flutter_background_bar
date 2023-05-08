@@ -8,3 +8,9 @@ final hyprlandEventsProvider = StreamProvider<Event>((ref) {
   final hyprland = ref.watch(hyprlandProvider);
   return hyprland.value?.eventsStream ?? const Stream.empty();
 });
+
+final hyprlandWorkspaces = FutureProvider((ref) async {
+  final hyprland = ref.watch(hyprlandProvider);
+
+  return hyprland.value?.getWorkspaces() ?? const <Workspace>[];
+});

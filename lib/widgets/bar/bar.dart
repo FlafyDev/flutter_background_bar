@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background_bar/widgets/bar/parts/info.dart';
+import 'package:flutter_background_bar/widgets/bar/parts/music.dart';
 import 'package:flutter_background_bar/widgets/bar/parts/workspaces/workspaces.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -26,6 +27,8 @@ class Bar extends HookConsumerWidget {
           SizedBox(width: 8),
           WorkspacesIndicator(),
           Spacer(),
+          Music(),
+          SizedBox(width: 8),
           Info(),
         ],
       ),
@@ -52,7 +55,7 @@ class BarContainer extends HookConsumerWidget {
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.7),
@@ -68,7 +71,7 @@ class BarContainer extends HookConsumerWidget {
                 borderRadius: BorderRadius.all(Radius.circular(8)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black87,
+                    color: Colors.black,
                     blurRadius: 10,
                     blurStyle: BlurStyle.outer,
                   ),
