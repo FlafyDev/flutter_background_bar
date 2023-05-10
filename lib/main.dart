@@ -16,7 +16,18 @@ class MyApp extends HookConsumerWidget {
     return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.dark,
-        primarySwatch: Colors.blue,
+        // primaryColor: Colors.white,
+        // primaryColorDark: Colors.white,
+        primarySwatch: Colors.grey,
+        sliderTheme: SliderThemeData(
+          overlayShape: SliderComponentShape.noOverlay,
+          activeTrackColor: Colors.white,
+          inactiveTrackColor: Colors.white.withOpacity(0.5),
+          thumbColor: Colors.white,
+          overlayColor: Colors.white.withOpacity(0.5),
+          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+          trackHeight: 2,
+        ),
       ),
       home: Scaffold(
         body: DecoratedBox(

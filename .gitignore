@@ -46,3 +46,5 @@ app.*.map.json
 # Nix
 result
 .direnv
+
+elinux/flutter/ephemeral

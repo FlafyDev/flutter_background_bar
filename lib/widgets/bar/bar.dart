@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_bar/widgets/bar/parts/info.dart';
 import 'package:flutter_background_bar/widgets/bar/parts/music.dart';
+import 'package:flutter_background_bar/widgets/bar/parts/sound.dart';
 import 'package:flutter_background_bar/widgets/bar/parts/workspaces/workspaces.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -28,6 +29,8 @@ class Bar extends HookConsumerWidget {
           WorkspacesIndicator(),
           Spacer(),
           Music(),
+          SizedBox(width: 8),
+          Sound(),
           SizedBox(width: 8),
           Info(),
         ],
