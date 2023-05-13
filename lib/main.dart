@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_background_bar/widgets/background/background.dart';
 import 'package:flutter_background_bar/widgets/bar/bar.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -25,40 +26,19 @@ class MyApp extends HookConsumerWidget {
           inactiveTrackColor: Colors.white.withOpacity(0.5),
           thumbColor: Colors.white,
           overlayColor: Colors.white.withOpacity(0.5),
-          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+          thumbShape: SliderComponentShape.noThumb,
           trackHeight: 2,
         ),
       ),
       home: Scaffold(
-        body: DecoratedBox(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('/home/flafydev/Pictures/greenery/green3.jpg'),
-              fit: BoxFit.cover,
+        body: Stack(
+          children: [
+            const Background(),
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: Bar(),
             ),
-          ),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Center(
-                  child: ClipRRect(
-                    // TODO(flafydev): Figure out how to Clip as a circle
-                    borderRadius: BorderRadius.circular(1000),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                      child: const Image(
-                        image: AssetImage('assets/bubble.png'),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: Bar(),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );

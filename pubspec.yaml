@@ -18,6 +18,7 @@ dependencies:
     git: 
       url: https://github.com/flafydev/hyprland_ipc.git
   file: ^6.1.4
+  intl: ^0.18.1
 
 dev_dependencies:
   custom_lint: ^0.3.4

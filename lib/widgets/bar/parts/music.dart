@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_bar/providers/mpris.dart';
@@ -11,27 +13,56 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class WaveformPainter extends CustomPainter {
-  const WaveformPainter({required this.values});
+  const WaveformPainter({
+    required this.values,
+    required this.strokeWidth,
+    required this.round,
+    required this.middle,
+  });
 
   final List<double> values;
+  final double strokeWidth;
+  final bool middle;
+  final bool round;
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white
+      ..color = Colors.white.withOpacity(middle ? 1 : 0.9)
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 5.0;
+      ..strokeCap = round ? StrokeCap.round : StrokeCap.round
+      ..strokeWidth = strokeWidth;
+    final paint2 = Paint()
+      ..color = Colors.black.withOpacity(0.4)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = round ? StrokeCap.round : StrokeCap.round
+      ..strokeWidth = strokeWidth + 8;
 
     final widthBetween = size.width / (values.length - 1);
 
     for (var i = 0; i < values.length; i++) {
       final x = widthBetween * i;
-      canvas.drawLine(
-        Offset(x, size.height / 2 * (1 - values[i])),
-        Offset(x, size.height - size.height / 2 * (1 - values[i])),
-        paint,
-      );
+      if (middle) {
+        canvas.drawLine(
+          Offset(x, size.height / 2 * (1 - values[i])),
+          Offset(x, size.height - size.height / 2 * (1 - values[i])),
+          paint,
+        );
+      } else {
+        canvas
+          ..drawLine(
+            Offset(x,
+                size.height - size.height * values[i] + (strokeWidth + 8) / 2),
+            Offset(x, size.height + (strokeWidth + 8) / 2),
+            paint2,
+          )
+          ..drawLine(
+            Offset(x,
+                size.height - size.height * values[i] + (strokeWidth + 8) / 2),
+            Offset(x, size.height + (strokeWidth + 8) / 2),
+            paint,
+          );
+      }
     }
   }
 
@@ -78,9 +109,14 @@ class Music extends HookConsumerWidget {
                         children: [
                           if (cover == null)
                             Container(
-                              margin: EdgeInsets.all((1 - progress ) * 8),
-                              width: 50,
-                              height: 50,
+                              margin: EdgeInsets.only(right: progress * 8),
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: SizedBox(
+                                  height: 50,
+                                  width: 50,
+                                ),
+                              ),
                             ),
                           if (cover != null)
                             Opacity(
@@ -122,28 +158,30 @@ class Music extends HookConsumerWidget {
                                 ),
                               ),
                             ),
-                          if (!kDebugMode)
-                            Positioned.fill(
-                              child: Container(
-                                padding: EdgeInsets.all((1 - progress) * 8)
-                                    .copyWith(right: 8),
-                                child: Opacity(
-                                  opacity: cover == null ? 1 : 1 - progress,
-                                  child: Consumer(
-                                    builder: (context, ref, child) {
-                                      final waveforms =
-                                          ref.watch(waveformsProvider);
-                                      return CustomPaint(
-                                        painter: WaveformPainter(
-                                          values: waveforms.valueOrNull ?? [],
-                                          // values: [1, 0.2, 0.3, 0.8, 0.3],
-                                        ),
-                                      );
-                                    },
-                                  ),
+                          Positioned.fill(
+                            child: Container(
+                              padding: EdgeInsets.all((1 - progress) * 8)
+                                  .copyWith(right: 8),
+                              child: Opacity(
+                                opacity: cover == null ? 1 : 1 - progress,
+                                child: Consumer(
+                                  builder: (context, ref, child) {
+                                    final waveforms =
+                                        ref.watch(waveformsProvider(6));
+                                    return CustomPaint(
+                                      painter: WaveformPainter(
+                                        strokeWidth: 5,
+                                        values: waveforms.valueOrNull ?? [],
+                                        round: true,
+                                        middle: true,
+                                        // values: [1, 0.2, 0.3, 0.8, 0.3],
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ),
+                          ),
                         ],
                       );
                     },
@@ -187,7 +225,7 @@ class _MusicInfoControls extends StatelessWidget {
                           (value) => value.title,
                         ),
                       ) ??
-                      'none';
+                      '';
                   return Text(
                     title,
                     maxLines: 1,

@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background_bar/providers/hyprland.dart';
+import 'package:flutter_background_bar/utils/bouncher.dart';
 import 'package:flutter_background_bar/widgets/bar/bar.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -37,7 +39,7 @@ class WorkspacesIndicator extends HookConsumerWidget {
 
     useEffect(
       () {
-        int? lastRemovedWindow;
+        final closedWindows = <int>[];
         Future<void> updateWindows(Event? event) async {
           // TODO(flafy): update it automatically
           const bottomReserved = 70.0;
@@ -51,13 +53,9 @@ class WorkspacesIndicator extends HookConsumerWidget {
           final tempWindows =
               SplayTreeMap<int, List<WorkspacesIndicatorWindow>>();
           final hyprWindows = await hyprland.value!.getClients();
-          if (event is CloseWindowEvent) {
-            lastRemovedWindow = event.windowAddress;
-          }
-          if (event is OpenWindowEvent) lastRemovedWindow = 0;
 
           for (final hyprWindow in hyprWindows) {
-            if (lastRemovedWindow == hyprWindow.address) continue;
+            if (closedWindows.contains(hyprWindow.address)) continue;
 
             if (tempWindows[hyprWindow.workspaceId] == null) {
               tempWindows[hyprWindow.workspaceId] = [];
@@ -114,7 +112,18 @@ class WorkspacesIndicator extends HookConsumerWidget {
           }
         }
 
-        final subscription = hyprland.value?.eventsStream.listen(updateWindows);
+        final debouncer = Debouncer();
+        final subscription = hyprland.value?.eventsStream.listen((event) {
+          if (event is CloseWindowEvent) {
+            closedWindows.add(event.windowAddress);
+          }
+          if (event is OpenWindowEvent) {
+            closedWindows.remove(event.windowAddress);
+          }
+          debouncer.debounce(const Duration(milliseconds: 50), () {
+            updateWindows(event);
+          });
+        });
         if (hyprland.value != null) updateWindows(null);
         return () => subscription?.cancel();
       },

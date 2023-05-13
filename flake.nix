@@ -25,18 +25,33 @@
         inherit (pkgs) flutter-background-bar;
         default = pkgs.flutter-background-bar;
       };
-      devShell = pkgs.mkFlutterShell {
-        linux = {
-          enable = true;
-        };
+      devShell = pkgs.mkShell {
+        nativeBuildInputs = with pkgs; [
+          flutter
+          pkg-config
+          cmake
+          ninja
+          clang
+        ];
         buildInputs = with pkgs; [
           gtk-layer-shell
           cava
+
+          atk
+          cairo
+          gdk-pixbuf
+          glib
+          gtk3
+          harfbuzz
+          libepoxy
+          pango
+          xorg.libX11
+          libdeflate
         ];
       };
     })
     // {
-      overlays.default = final: prev: let
+      overlays.default = _final: prev: let
         pkgs = import nixpkgs {
           inherit (prev) system;
           overlays = [dart-flutter.overlays.default];

@@ -1,15 +1,16 @@
-{ lib
-, gtk-layer-shell
-, buildFlutterApp
+{
+  lib,
+  gtk-layer-shell,
+  flutter,
 }:
-
-buildFlutterApp {
+flutter.buildFlutterApplication {
   pname = "flutter-background-bar";
   version = "0.1.0";
 
   src = ../.;
+  vendorHash = "";
 
-  buildInputs = with pkgs; [
+  buildInputs = [
     gtk-layer-shell
   ];
 
