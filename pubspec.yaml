@@ -8,7 +8,8 @@ environment:
 
 dependencies:
   mpris:
-    path: /mnt/general/repos/provokateurin/dart-mpris
+    git:
+      url: https://github.com/FlafyDev/dart-mpris
   flutter:
     sdk: flutter
   flutter_hooks: ^0.18.6

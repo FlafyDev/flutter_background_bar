@@ -298,9 +298,11 @@ packages:
   mpris:
     dependency: "direct main"
     description:
-      path: "/mnt/general/repos/provokateurin/dart-mpris"
-      relative: false
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "1f777ca2a53b0bbb272a7f29b92762f700180ce4"
+      url: "https://github.com/FlafyDev/dart-mpris"
+    source: git
     version: "1.1.0"
   package_config:
     dependency: transitive
