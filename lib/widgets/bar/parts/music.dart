@@ -28,12 +28,12 @@ class WaveformPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(middle ? 1 : 0.9)
+      ..color = Colors.white.withOpacity(middle ? 1 : 0)
       ..style = PaintingStyle.stroke
       ..strokeCap = round ? StrokeCap.round : StrokeCap.round
       ..strokeWidth = strokeWidth;
     final paint2 = Paint()
-      ..color = Colors.black.withOpacity(0.4)
+      ..color = Colors.black.withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeCap = round ? StrokeCap.round : StrokeCap.round
       ..strokeWidth = strokeWidth + 8;
@@ -167,10 +167,10 @@ class Music extends HookConsumerWidget {
                                 child: Consumer(
                                   builder: (context, ref, child) {
                                     final waveforms =
-                                        ref.watch(waveformsProvider(6));
+                                        ref.watch(waveformsProvider(7));
                                     return CustomPaint(
                                       painter: WaveformPainter(
-                                        strokeWidth: 5,
+                                        strokeWidth: 2,
                                         values: waveforms.valueOrNull ?? [],
                                         round: true,
                                         middle: true,

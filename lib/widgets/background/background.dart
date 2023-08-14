@@ -10,7 +10,6 @@ import 'package:flutter_background_bar/providers/hyprland.dart';
 import 'package:flutter_background_bar/providers/time.dart';
 import 'package:flutter_background_bar/providers/waveforms.dart';
 import 'package:flutter_background_bar/utils/bouncher.dart';
-import 'package:flutter_background_bar/widgets/background/bubble.dart';
 import 'package:flutter_background_bar/widgets/bar/parts/music.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -74,15 +73,14 @@ class Background extends HookConsumerWidget {
           AnimatedPositioned(
             duration: const Duration(milliseconds: 400),
             curve: Curves.easeOut,
-            left: -5.0 * (5 - workspaceNumber.value) - 2.5,
-            child: Transform.scale(
-              scale: 1.02,
-              child: Image(
-                image: AssetImage(
-                  '/home/flafydev/Pictures/greenery/green3.png',
-                ),
-                fit: BoxFit.cover,
+            // left: -5.0 * (5 - workspaceNumber.value) - 2.5,
+            child: Image(
+              image: AssetImage(
+                '/home/flafydev/Pictures/wallpaper.png',
               ),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              fit: BoxFit.fill,
             ),
           ),
           Positioned.fill(
@@ -94,7 +92,7 @@ class Background extends HookConsumerWidget {
                   child: Align(
                     alignment: Alignment(
                       0,
-                      1 + (1 - Curves.easeInOutExpo.transform(shownAC.value)),
+                      1.4 - (0.4 * Curves.easeOutExpo.transform(shownAC.value)),
                     ),
                     child: Opacity(
                       opacity: shownAC.value,
@@ -105,43 +103,43 @@ class Background extends HookConsumerWidget {
               },
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: 300,
+                height: 200,
                 child: _BackgroundWaveforms(),
               ),
             ),
           ),
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOut,
-            left: -5.0 * (5 - workspaceNumber.value) - 2.5,
-            child: Transform.scale(
-              scale: 1.02,
-              child: Image(
-                image: AssetImage(
-                  '/home/flafydev/Pictures/greenery/green3top.png',
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Visibility(
-            visible: !kDebugMode,
-            child: AnimatedBuilder(
-              animation: shownAC,
-              builder: (context, child) {
-                return Visibility(
-                  visible: shownAC.value > 0,
-                  child: Opacity(
-                    opacity: shownAC.value,
-                    child: Bubbles(
-                      horizontalDistance: 200 *
-                          (1 - Curves.easeInOutExpo.transform(shownAC.value)),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          // AnimatedPositioned(
+          //   duration: const Duration(milliseconds: 400),
+          //   curve: Curves.easeOut,
+          //   left: -5.0 * (5 - workspaceNumber.value) - 2.5,
+          //   child: Transform.scale(
+          //     scale: 1.02,
+          //     child: Image(
+          //       image: AssetImage(
+          //         '/home/flafydev/Pictures/greenery/green3top.png',
+          //       ),
+          //       fit: BoxFit.cover,
+          //     ),
+          //   ),
+          // ),
+          // Visibility(
+          //   visible: !kDebugMode,
+          //   child: AnimatedBuilder(
+          //     animation: shownAC,
+          //     builder: (context, child) {
+          //       return Visibility(
+          //         visible: shownAC.value > 0,
+          //         child: Opacity(
+          //           opacity: shownAC.value,
+          //           child: Bubbles(
+          //             horizontalDistance: 200 *
+          //                 (1 - Curves.easeInOutExpo.transform(shownAC.value)),
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
           Positioned.fill(
             child: AnimatedBuilder(
               animation: shownAC,
@@ -149,7 +147,7 @@ class Background extends HookConsumerWidget {
                 return Align(
                   alignment: Alignment(
                     0,
-                    -0.8 - (1 - Curves.easeInOutExpo.transform(shownAC.value)),
+                    (0.1 * Curves.easeOutExpo.transform(shownAC.value)) - 1,
                   ),
                   child: Visibility(
                     visible: shownAC.value > 0,
@@ -168,14 +166,14 @@ class Background extends HookConsumerWidget {
                             (time) => Text(
                               DateFormat('HH:mm').format(time),
                               style: TextStyle(
-                                fontSize: 200,
+                                fontSize: 100,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 decoration: TextDecoration.none,
                                 shadows: <Shadow>[
                                   Shadow(
-                                    offset: Offset(20.0, 20.0),
-                                    blurRadius: 20.0,
+                                    offset: Offset(5.0, 5.0),
+                                    blurRadius: 10.0,
                                     color: Color.fromARGB(255, 0, 0, 0),
                                   ),
                                 ],
@@ -194,89 +192,6 @@ class Background extends HookConsumerWidget {
   }
 }
 
-class Bubbles extends HookConsumerWidget {
-  const Bubbles({
-    super.key,
-    this.horizontalDistance = 0,
-  });
-
-  final double horizontalDistance;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bubbleAC = useAnimationController(
-      duration: const Duration(seconds: 20),
-    );
-
-    useEffect(
-      () {
-        bubbleAC
-          ..forward()
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              bubbleAC.repeat();
-            }
-          });
-
-        return;
-      },
-      [],
-    );
-
-    return Stack(
-      children: List.generate(5, (i) {
-            const progresses = [0, 0.5, 0.1, 0.9, 0.2];
-            const speed = [1.1, 1, 1, 1.2, 1];
-            return AnimatedBuilder(
-              animation: bubbleAC,
-              builder: (context, child) {
-                final radius = 500.0 + (i / 5 * 200);
-                var progress = (bubbleAC.value * speed[i] + progresses[i]);
-                while (progress > 1) progress -= 1;
-                final angle = progress * pi / 2; // Convert the value to radians
-
-                return Positioned(
-                  top: radius * sin(angle) - 100 * 2,
-                  left: radius * cos(angle) - 100 * 2 - horizontalDistance,
-                  width: 100,
-                  height: 100,
-                  child: Transform.rotate(
-                    angle: -progress * pi * 0.2,
-                    child: child,
-                  ),
-                );
-              },
-              child: const Bubble(),
-            );
-          }) +
-          List.generate(5, (i) {
-            const progresses = [0, 0.5, 0.1, 0.4, 0.2];
-            const speed = [1.1, 1, 1, 1, 1];
-            return AnimatedBuilder(
-              animation: bubbleAC,
-              builder: (context, child) {
-                final radius = 500.0 + (i / 5 * 200);
-                var progress = (bubbleAC.value * speed[i] + progresses[i]);
-                while (progress > 1) progress -= 1;
-                final angle = progress * pi / 2; // Convert the value to radians
-
-                return Positioned(
-                  top: radius * sin(angle) - 100 * 2,
-                  right: radius * cos(angle) - 100 * 2 - horizontalDistance,
-                  width: 100,
-                  height: 100,
-                  child: Transform.rotate(
-                    angle: -progress * pi * 0.2,
-                    child: child,
-                  ),
-                );
-              },
-              child: const Bubble(),
-            );
-          }),
-    );
-  }
-}
 
 class _BackgroundWaveforms extends HookConsumerWidget {
   const _BackgroundWaveforms({super.key});

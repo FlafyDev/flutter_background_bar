@@ -18,23 +18,32 @@ class Time extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             time.whenData(
-              (time) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      DateFormat('HH:mm').format(time),
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    Text(
-                      DateFormat('MMMM dd, yyyy').format(time),
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                  ],
-                );
-              },
-            ).valueOrNull ?? Container(),
+                  (time) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          DateFormat('HH:mm').format(time),
+                          style:
+                              Theme.of(context).textTheme.titleSmall!.copyWith(
+                                    fontFamily: 'Arial',
+                                    fontSize: 11,
+                                  ),
+                        ),
+                        Text(
+                          DateFormat('MMMM dd, yyyy').format(time),
+                          style:
+                              Theme.of(context).textTheme.labelSmall!.copyWith(
+                                    fontFamily: "Arial",
+                                    fontSize: 8, 
+                                  ),
+                        ),
+                      ],
+                    );
+                  },
+                ).valueOrNull ??
+                Container(),
             const Icon(Icons.notifications_outlined, color: Colors.white),
           ],
         ),

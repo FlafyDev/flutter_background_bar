@@ -40,3 +40,87 @@ class Bubble extends HookConsumerWidget {
     );
   }
 }
+
+class Bubbles extends HookConsumerWidget {
+  const Bubbles({
+    super.key,
+    this.horizontalDistance = 0,
+  });
+
+  final double horizontalDistance;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bubbleAC = useAnimationController(
+      duration: const Duration(seconds: 20),
+    );
+
+    useEffect(
+      () {
+        bubbleAC
+          ..forward()
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              bubbleAC.repeat();
+            }
+          });
+
+        return;
+      },
+      [],
+    );
+
+    return Stack(
+      children: List.generate(5, (i) {
+            const progresses = [0, 0.5, 0.1, 0.9, 0.2];
+            const speed = [1.1, 1, 1, 1.2, 1];
+            return AnimatedBuilder(
+              animation: bubbleAC,
+              builder: (context, child) {
+                final radius = 500.0 + (i / 5 * 200);
+                var progress = (bubbleAC.value * speed[i] + progresses[i]);
+                while (progress > 1) progress -= 1;
+                final angle = progress * pi / 2; // Convert the value to radians
+
+                return Positioned(
+                  top: radius * sin(angle) - 100 * 2,
+                  left: radius * cos(angle) - 100 * 2 - horizontalDistance,
+                  width: 100,
+                  height: 100,
+                  child: Transform.rotate(
+                    angle: -progress * pi * 0.2,
+                    child: child,
+                  ),
+                );
+              },
+              child: const Bubble(),
+            );
+          }) +
+          List.generate(5, (i) {
+            const progresses = [0, 0.5, 0.1, 0.4, 0.2];
+            const speed = [1.1, 1, 1, 1, 1];
+            return AnimatedBuilder(
+              animation: bubbleAC,
+              builder: (context, child) {
+                final radius = 500.0 + (i / 5 * 200);
+                var progress = (bubbleAC.value * speed[i] + progresses[i]);
+                while (progress > 1) progress -= 1;
+                final angle = progress * pi / 2; // Convert the value to radians
+
+                return Positioned(
+                  top: radius * sin(angle) - 100 * 2,
+                  right: radius * cos(angle) - 100 * 2 - horizontalDistance,
+                  width: 100,
+                  height: 100,
+                  child: Transform.rotate(
+                    angle: -progress * pi * 0.2,
+                    child: child,
+                  ),
+                );
+              },
+              child: const Bubble(),
+            );
+          }),
+    );
+  }
+}

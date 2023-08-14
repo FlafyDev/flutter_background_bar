@@ -2,14 +2,14 @@
   description = "flutter background + bar";
 
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/962cc00249dd42d748d9b9e7109521978aab8a48";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = {
+  outputs = let in {
     self,
     nixpkgs,
     flake-utils,
-    dart-flutter,
   }:
     flake-utils.lib.eachDefaultSystem
     (system: let
@@ -17,7 +17,17 @@
         inherit system;
         overlays = [
           self.overlays.default
-          dart-flutter.overlays.default
+          (final: prev: {
+            gtk3 = prev.gtk3.overrideAttrs (old: {
+              src = prev.fetchgit {
+                url = "https://gitlab.gnome.org/GNOME/gtk";
+                # owner = "GNOME";
+                # repo = "gtk";
+                rev = "refs/heads/gtk-3-24";
+                sha256 = "sha256-D3sr2iMneF3iyQ5RwLvfhGOQEhe+q9bQ4i48EJCnmWk=";
+              };
+            });
+          })
         ];
       };
     in {
@@ -36,7 +46,6 @@
         buildInputs = with pkgs; [
           gtk-layer-shell
           cava
-
           atk
           cairo
           gdk-pixbuf
@@ -51,13 +60,8 @@
       };
     })
     // {
-      overlays.default = _final: prev: let
-        pkgs = import nixpkgs {
-          inherit (prev) system;
-          overlays = [dart-flutter.overlays.default];
-        };
-      in {
-        flutter-background-bar = pkgs.callPackage ./nix/package.nix {};
+      overlays.default = _final: prev: {
+        flutter-background-bar = prev.callPackage ./nix/package.nix {};
       };
     };
 }

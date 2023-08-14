@@ -12,32 +12,31 @@ class Bar extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      height: 70,
+      height: 50,
       width: double.infinity,
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(4).copyWith(top: 8),
       child: Row(
         children: const [
           BarContainer(
             child: AspectRatio(
               aspectRatio: 1,
               child: Center(
-                // child: Icon(Icons.window_rounded, color: Colors.white),
-                child: Image(
-                  width: 20,
-                  filterQuality: FilterQuality.medium,
-                  image: AssetImage('/home/flafydev/Pictures/hyprland.png'),
-                  color: Colors.white,
-                )
-              ),
+                  // child: Icon(Icons.window_rounded, color: Colors.white),
+                  child: Image(
+                width: 16,
+                filterQuality: FilterQuality.medium,
+                image: AssetImage('/home/flafydev/Pictures/hyprland.png'),
+                color: Colors.white,
+              )),
             ),
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 4),
           WorkspacesIndicator(),
           Spacer(),
           Music(),
-          SizedBox(width: 8),
+          SizedBox(width: 4),
           Sound(),
-          SizedBox(width: 8),
+          SizedBox(width: 4),
           Time(),
         ],
       ),
@@ -61,14 +60,14 @@ class BarContainer extends HookConsumerWidget {
           Container(
             clipBehavior: Clip.antiAlias,
             decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderRadius: BorderRadius.all(Radius.circular(6)),
             ),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7),
-                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: const BorderRadius.all(Radius.circular(6)),
                 ),
                 child: child,
               ),
@@ -77,7 +76,7 @@ class BarContainer extends HookConsumerWidget {
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
+                borderRadius: BorderRadius.all(Radius.circular(6)),
                 border: Border.fromBorderSide(
                   BorderSide(
                     color: Color(0xff777777),
