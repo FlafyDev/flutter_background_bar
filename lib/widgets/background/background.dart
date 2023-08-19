@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -23,7 +24,7 @@ class Background extends HookConsumerWidget {
     final hyprland = ref.watch(hyprlandProvider);
     final workspaceNumber = useState(0);
     final shownAC = useAnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 200),
     );
 
     useEffect(
@@ -33,15 +34,17 @@ class Background extends HookConsumerWidget {
         Future<void> checkWorkspaces(Event? event) async {
           if (event is CloseWindowEvent ||
               event is OpenWindowEvent ||
-              event is WorkspaceEvent) {
+              event is WorkspaceEvent ||
+              true) {
             workspaces = {};
-            for (final workspace in await hyprland.value!.getWorkspaces()) {
-              workspaces[workspace.name] = workspace.windowsCount;
+            for (final client in await hyprland.value!.getClients()) {
+              workspaces[client.workspaceName] =
+                  (workspaces[client.workspaceName] ?? 0) +
+                      (client.floating ? 0 : 1);
             }
             if (event is WorkspaceEvent) {
               activeWorkspace = event.workspaceName;
               workspaceNumber.value = int.parse(event.workspaceName);
-              print(workspaceNumber.value);
             }
           }
           // print(workspaces);
@@ -70,19 +73,27 @@ class Background extends HookConsumerWidget {
       height: MediaQuery.of(context).size.height,
       child: Stack(
         children: [
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOut,
-            // left: -5.0 * (5 - workspaceNumber.value) - 2.5,
-            child: Image(
-              image: AssetImage(
-                '/home/flafydev/Pictures/wallpaper.png',
-              ),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              fit: BoxFit.fill,
+          Image(
+            image: FileImage(
+              File(Platform.environment['FB_DESKTOP_BACKGROUND']!),
             ),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            fit: BoxFit.fill,
           ),
+          // AnimatedPositioned(
+          //   duration: const Duration(milliseconds: 400),
+          //   curve: Curves.easeOut,
+          //   // left: -5.0 * (5 - workspaceNumber.value) - 2.5,
+          //   child: Image(
+          //     image: AssetImage(
+          //       '/nix/store/spna4cfdd6r3g2pbdwldz3k55fq9nvm3-windows11-flower.jpg',
+          //     ),
+          //     width: MediaQuery.of(context).size.width,
+          //     height: MediaQuery.of(context).size.height,
+          //     fit: BoxFit.fill,
+          //   ),
+          // ),
           Positioned.fill(
             child: AnimatedBuilder(
               animation: shownAC,
@@ -116,7 +127,7 @@ class Background extends HookConsumerWidget {
           //     scale: 1.02,
           //     child: Image(
           //       image: AssetImage(
-          //         '/home/flafydev/Pictures/greenery/green3top.png',
+          //         '/home/flafy/Pictures/flower-front.png',
           //       ),
           //       fit: BoxFit.cover,
           //     ),
@@ -140,58 +151,97 @@ class Background extends HookConsumerWidget {
           //     },
           //   ),
           // ),
-          Positioned.fill(
-            child: AnimatedBuilder(
-              animation: shownAC,
-              builder: (context, child) {
-                return Align(
-                  alignment: Alignment(
-                    0,
-                    (0.1 * Curves.easeOutExpo.transform(shownAC.value)) - 1,
-                  ),
-                  child: Visibility(
-                    visible: shownAC.value > 0,
-                    child: Opacity(
-                      opacity: shownAC.value,
-                      child: child,
-                    ),
-                  ),
-                );
-              },
-              child: Consumer(
-                builder: (context, ref, child) {
-                  final time = ref.watch(timeProvider);
-                  return time
-                          .whenData(
-                            (time) => Text(
-                              DateFormat('HH:mm').format(time),
-                              style: TextStyle(
-                                fontSize: 100,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                decoration: TextDecoration.none,
-                                shadows: <Shadow>[
-                                  Shadow(
-                                    offset: Offset(5.0, 5.0),
-                                    blurRadius: 10.0,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  ),
-                                ],
-                              ),
+          // Positioned.fill(
+          //   child: AnimatedBuilder(
+          //     animation: shownAC,
+          //     builder: (context, child) {
+          //       return Align(
+          //         alignment: Alignment(
+          //           0,
+          //           (0.1 * Curves.easeOutExpo.transform(shownAC.value)) - 1,
+          //         ),
+          //         child: Visibility(
+          //           visible: shownAC.value > 0,
+          //           child: Opacity(
+          //             opacity: shownAC.value,
+          //             child: child,
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     child: Consumer(
+          //       builder: (context, ref, child) {
+          //         final time = ref.watch(timeProvider);
+          //         return time
+          //                 .whenData(
+          //                   (time) => Text(
+          //                     DateFormat('HH:mm').format(time),
+          //                     style: TextStyle(
+          //                       fontSize: 100,
+          //                       fontWeight: FontWeight.bold,
+          //                       color: Colors.white,
+          //                       decoration: TextDecoration.none,
+          //                       shadows: <Shadow>[
+          //                         Shadow(
+          //                           offset: Offset(5.0, 5.0),
+          //                           blurRadius: 10.0,
+          //                           color: Color.fromARGB(255, 0, 0, 0),
+          //                         ),
+          //                       ],
+          //                     ),
+          //                   ),
+          //                 )
+          //                 .value ??
+          //             const SizedBox();
+          //       },
+          //     ),
+          //   ),
+          // ),
+
+          Positioned(
+            top: 432,
+            left: 1370,
+            child: Consumer(
+              builder: (context, ref, child) {
+                final time = ref.watch(timeProvider);
+                return time
+                        .whenData(
+                          (time) => Text(
+                            DateFormat('HH:mm').format(time),
+                            style: TextStyle(
+                              fontSize: 100,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              decoration: TextDecoration.none,
+                              shadows: <Shadow>[
+                                Shadow(
+                                  offset: Offset(5.0, 5.0),
+                                  blurRadius: 10.0,
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                ),
+                              ],
                             ),
-                          )
-                          .value ??
-                      const SizedBox();
-                },
-              ),
+                          ),
+                        )
+                        .value ??
+                    const SizedBox();
+              },
             ),
           ),
+          if (Platform.environment['FB_DESKTOP_BACKGROUND_TOP'] != null)
+            Image(
+              image: FileImage(
+                File(Platform.environment['FB_DESKTOP_BACKGROUND_TOP']!),
+              ),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              fit: BoxFit.fill,
+            ),
         ],
       ),
     );
   }
 }
-
 
 class _BackgroundWaveforms extends HookConsumerWidget {
   const _BackgroundWaveforms({super.key});

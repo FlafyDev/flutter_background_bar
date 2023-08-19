@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -69,6 +70,7 @@ class WorkspacesIndicator extends HookConsumerWidget {
               case 'mpv':
                 icon = Icons.movie;
                 break;
+              case 'footclient':
               case 'foot':
                 if (hyprWindow.title.contains(' - nvim')) {
                   icon = Icons.code;
@@ -133,8 +135,8 @@ class WorkspacesIndicator extends HookConsumerWidget {
     return BarContainer(
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 2,
-          vertical: 4,
+          horizontal: 0,
+          vertical: 0,
         ),
         child: Row(
           children: AnimationConfiguration.toStaggeredList(
@@ -148,28 +150,34 @@ class WorkspacesIndicator extends HookConsumerWidget {
                 child: widget,
               ),
             ),
-            children: windows.value.keys.map<Widget>((key) {
-              final wins = windows.value[key]!;
-              return AnimatedScale(
-                duration: const Duration(milliseconds: 100),
-                scale: 1,
-                // scale: wins.any((win) => win.active) ? 1.1 : 1,
-                curve: Curves.easeOut,
-                child: Container(
-                  decoration: BoxDecoration(
-                      // color: Colors.white.withOpacity(0.08),
-                      ),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 2,
-                  ),
-                  // padding: const EdgeInsets.all(3),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: LayoutBuilder(
-                      builder: (context, contraints) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Stack(
+            children: List.generate(
+                windows.value.keys.fold(0, (maximum, id) => max(maximum, id)),
+                (id) {
+              final wins = windows.value[id + 1] ?? [];
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 2,
+                  vertical: 4,
+                ),
+                child: AnimatedScale(
+                  duration: const Duration(milliseconds: 100),
+                  scale: 1,
+                  // scale: wins.any((win) => win.active) ? 1.1 : 1,
+                  curve: Curves.easeOut,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        // color: Colors.white.withOpacity(0.08),
+                        ),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 2,
+                    ),
+                    // padding: const EdgeInsets.all(3),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: LayoutBuilder(
+                        builder: (context, contraints) {
+                          return Stack(
                             children: wins.map((win) {
                               return Positioned.fromRect(
                                 rect: Rect.fromLTRB(
@@ -180,52 +188,73 @@ class WorkspacesIndicator extends HookConsumerWidget {
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(1),
-                                  child: ClipRRect(
-                                    // borderRadius: BorderRadius.circular(4),
-                                    child: BackdropFilter(
-                                      filter: win.floating || win.fullscreen
-                                          ? ImageFilter.blur(
-                                              sigmaX: 2,
-                                              sigmaY: 2,
-                                            )
-                                          : ImageFilter.blur(),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: win.floating
-                                                ? const Color(0x44aaaaaa)
-                                                : Colors.transparent,
-                                            width: 1,
+                                  child: Stack(
+                                    children: [
+                                      Positioned.fill(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            // border: Border.fromBorderSide(
+                                            //   BorderSide(
+                                            //     color: Color(0x77777777),
+                                            //   ),
+                                            // ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black38,
+                                                blurRadius: 5,
+                                                blurStyle: BlurStyle.outer,
+                                              ),
+                                            ],
                                           ),
-                                          color: win.active
-                                              ? const Color(0x44dddddd)
-                                              : const Color(0x44666666),
-                                          // borderRadius: BorderRadius.circular(4),
                                         ),
-                                        padding: const EdgeInsets.all(2),
-                                        child: Center(
-                                          child: FittedBox(
-                                            child: Icon(
-                                              size: 15,
-                                              win.icon,
-                                              color: Colors.white,
+                                      ),
+                                      ClipRRect(
+                                        // borderRadius: BorderRadius.circular(4),
+                                        child: BackdropFilter(
+                                          filter: win.floating || win.fullscreen
+                                              ? ImageFilter.blur(
+                                                  sigmaX: 2,
+                                                  sigmaY: 2,
+                                                )
+                                              : ImageFilter.blur(),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              // border: Border.all(
+                                              //   color: win.floating
+                                              //       ? const Color(0x44aaaaaa)
+                                              //       : Colors.transparent,
+                                              // ),
+                                              color: win.active
+                                                  ? const Color(0x63dddddd)
+                                                  : const Color(0x44666666),
+                                              // borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            padding: const EdgeInsets.all(2),
+                                            child: Center(
+                                              child: FittedBox(
+                                                child: Icon(
+                                                  size: 15,
+                                                  win.icon,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                               );
                             }).toList(),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
               );
-            }).toList(),
+            }),
           ),
         ),
       ),

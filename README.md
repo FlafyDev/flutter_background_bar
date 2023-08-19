@@ -1,5 +1,8 @@
 # Flutter background bar
 ###### Very W.I.P. Temporary name.
+The code is a mess, needs to be heavily refactored.
+
+---
 
 Flutter app for desktop UI.  
 A Layer Shell that sits in the background(behind the windows).  

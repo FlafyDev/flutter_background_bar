@@ -90,12 +90,12 @@ class Music extends HookConsumerWidget {
         child: AnimatedBuilder(
           animation: toggleAnimController,
           builder: (context, child) {
-            final progress = Curves.easeInOutExpo.transform(
+            final progress = Curves.easeOutExpo.transform(
               toggleAnimController.value,
             );
 
             return Padding(
-              padding: EdgeInsets.all(progress * 8),
+              padding: EdgeInsets.all(progress * 2),
               child: Row(
                 children: [
                   Consumer(
@@ -133,9 +133,9 @@ class Music extends HookConsumerWidget {
                                     ),
                                   ],
                                 ),
-                                margin: EdgeInsets.only(right: progress * 8),
+                                margin: EdgeInsets.all(progress * 2).copyWith(right: progress * 4),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(4),
                                   child: AspectRatio(
                                     aspectRatio: 1,
                                     child: Container(
@@ -167,7 +167,7 @@ class Music extends HookConsumerWidget {
                                 child: Consumer(
                                   builder: (context, ref, child) {
                                     final waveforms =
-                                        ref.watch(waveformsProvider(7));
+                                        ref.watch(waveformsProvider(5));
                                     return CustomPaint(
                                       painter: WaveformPainter(
                                         strokeWidth: 2,

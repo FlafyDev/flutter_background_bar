@@ -13,7 +13,7 @@ class Time extends HookConsumerWidget {
     return BarContainer(
       child: Container(
         width: 150,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -27,17 +27,15 @@ class Time extends HookConsumerWidget {
                           DateFormat('HH:mm').format(time),
                           style:
                               Theme.of(context).textTheme.titleSmall!.copyWith(
-                                    fontFamily: 'Arial',
-                                    fontSize: 11,
+                                    fontSize: 13,
                                   ),
                         ),
                         Text(
                           DateFormat('MMMM dd, yyyy').format(time),
-                          style:
-                              Theme.of(context).textTheme.labelSmall!.copyWith(
-                                    fontFamily: "Arial",
-                                    fontSize: 8, 
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelMedium!
+                              .copyWith(fontSize: 11),
                         ),
                       ],
                     );

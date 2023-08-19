@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class Bar extends HookConsumerWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(4).copyWith(top: 8),
       child: Row(
-        children: const [
+        children: [
           BarContainer(
             child: AspectRatio(
               aspectRatio: 1,
@@ -25,7 +26,9 @@ class Bar extends HookConsumerWidget {
                   child: Image(
                 width: 16,
                 filterQuality: FilterQuality.medium,
-                image: AssetImage('/home/flafydev/Pictures/hyprland.png'),
+                image: FileImage(
+                  File(Platform.environment['FB_OS_LOGO']!),
+                ),
                 color: Colors.white,
               )),
             ),
@@ -34,8 +37,8 @@ class Bar extends HookConsumerWidget {
           WorkspacesIndicator(),
           Spacer(),
           Music(),
-          SizedBox(width: 4),
-          Sound(),
+          // SizedBox(width: 4),
+          // Sound(),
           SizedBox(width: 4),
           Time(),
         ],
@@ -60,14 +63,14 @@ class BarContainer extends HookConsumerWidget {
           Container(
             clipBehavior: Clip.antiAlias,
             decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(6)),
+              borderRadius: BorderRadius.all(Radius.circular(4)),
             ),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
-                  borderRadius: const BorderRadius.all(Radius.circular(6)),
+                  color: Colors.blueGrey.withOpacity(0.2),
+                  borderRadius: const BorderRadius.all(Radius.circular(4)),
                 ),
                 child: child,
               ),
@@ -75,17 +78,16 @@ class BarContainer extends HookConsumerWidget {
           ),
           Positioned.fill(
             child: Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(6)),
-                border: Border.fromBorderSide(
-                  BorderSide(
-                    color: Color(0xff777777),
-                    width: 0.5,
-                  ),
-                ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                // border: Border.fromBorderSide(
+                //   BorderSide(
+                //     color: Color(0x77777777),
+                //   ),
+                // ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black54,
+                    color: Colors.black87,
                     blurRadius: 10,
                     blurStyle: BlurStyle.outer,
                   ),
